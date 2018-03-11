@@ -1,0 +1,19 @@
+{
+  "name": "bdd-test-helpers",
+  "version": "1.0.0-rc.0",
+  "main": "index.js",
+  "repository": "https://github.com/lVlyke/bdd-test-helpers.git",
+  "author": "Mychal Thompson <mychalrthompson@gmail.com>",
+  "license": "MIT",
+  "private": false,
+  "scripts": {
+    "build:js": "node scripts/build.js",
+    "test": "jasmine"
+  },
+  "devDependencies": {
+    "@types/jasmine": "^2.8.6",
+    "fs-extra": "^5.0.0",
+    "jasmine": "^3.1.0",
+    "typescript": "^2.7.2"
+  }
+}
