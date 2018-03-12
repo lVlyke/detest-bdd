@@ -22,31 +22,31 @@ BDD Test Helpers works with any JavaScript testing framework that uses the ```de
 
 ## Examples
 
-* [Suite](#suite)
+* [Spec](#spec)
 * [Template](#template)
 * [Random](#random)
 
 (For more information, see the full [**API reference**](#api))
 
-### Suite
+### Spec
 
-The ```Suite``` namespace contains a helper object that enables more type-safe testing by exposing a type for all test suite parameters. ```Suite``` proxies the built-in testing functions (```beforeEach```, ```afterEach```, and ```it```) and provides the test suite's parameters as a type-safe argument to the callback.
+The ```Spec``` namespace contains a helper object that enables more type-safe testing by exposing a type for all test spec parameters. ```Spec``` proxies the built-in testing functions (```beforeEach```, ```afterEach```, and ```it```) and provides the test spec's parameters as a type-safe argument to the callback.
 
 ```ts
-import { Suite } from "bdd-test-helpers";
+import { Spec } from "bdd-test-helpers";
 
 interface FooServiceTest {
     fooParams: any;
     fooResult: FooResult;
 }
 
-const suite = Suite.create<FooServiceTest>();
+const spec = Spec.create<FooServiceTest>();
 
 describe("Given a FooService", () => {
 
     describe("when getResult is called", () => {
 
-        suite.beforeEach((params: FooServiceTest) => {
+        spec.beforeEach((params: FooServiceTest) => {
             params.fooParams = {
                 input: "foobar"
             };
@@ -61,7 +61,7 @@ describe("Given a FooService", () => {
 });
 ```
 
-```Suite``` also replaces the traditional injection of the ```doneFn``` for asynchronous tests in favor of returning a Promise from the callback when waiting for an asynchronous task.
+```Spec``` also replaces the traditional injection of the ```doneFn``` for asynchronous tests in favor of returning a Promise from the callback when waiting for an asynchronous task.
 
 ```ts
 declare var FooService: {
@@ -72,7 +72,7 @@ describe("Given a FooService", () => {
 
     describe("when getResult is called", () => {
 
-        suite.beforeEach((params: FooServiceTest): Promise<any> => {
+        spec.beforeEach((params: FooServiceTest): Promise<any> => {
             params.fooParams = {
                 input: "foobar"
             };
@@ -97,7 +97,7 @@ TODO
 
 ## API
 
-### Suite
+### Spec
 
 TODO
 

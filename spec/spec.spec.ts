@@ -1,6 +1,6 @@
-import { Suite } from "./../src/suite";
+import { Spec } from "./../src/spec";
 
-describe("Given a Suite test helper", () => {
+describe("Given a Spec test helper", () => {
 
     describe("when inject is called", () => {
 
@@ -18,7 +18,7 @@ describe("Given a Suite test helper", () => {
             });
 
             beforeEach(function () { 
-                this.injectFn = Suite.inject(this.callbackFn);
+                this.injectFn = Spec.inject(this.callbackFn);
             });
 
             it("should return a function", function () {
@@ -31,7 +31,7 @@ describe("Given a Suite test helper", () => {
                     this.injectFn(this.doneFn);
                 });
 
-                it("should invoke the callback function with the suite's parameters", function () {
+                it("should invoke the callback function with the Spec's parameters", function () {
                     expect(this.callbackFn).toHaveBeenCalledWith(this);
                 });
 
@@ -70,7 +70,7 @@ describe("Given a Suite test helper", () => {
             });
 
             beforeEach(function () { 
-                this.injectFn = Suite.inject(this.callbackFn);
+                this.injectFn = Spec.inject(this.callbackFn);
             });
 
             it("should return a function", function () {
@@ -83,7 +83,7 @@ describe("Given a Suite test helper", () => {
                     this.injectFn(this.doneFn);
                 });
 
-                it("should invoke the callback function with the suite's parameters", function () {
+                it("should invoke the callback function with the Spec's parameters", function () {
                     expect(this.callbackFn).toHaveBeenCalledWith(this);
                 });
 
@@ -95,10 +95,10 @@ describe("Given a Suite test helper", () => {
     });
 
     describe("when create is called", () => {
-        const suiteObj = Suite.create(); 
+        const SpecObj = Spec.create(); 
 
         it("should return an object with the expected properties", function () {
-            expect(suiteObj).toEqual(jasmine.objectContaining({
+            expect(SpecObj).toEqual(jasmine.objectContaining({
                 beforeEach: jasmine.any(Function),
                 afterEach: jasmine.any(Function),
                 it: jasmine.any(Function)
@@ -108,9 +108,9 @@ describe("Given a Suite test helper", () => {
         describe("when beforeEach is called", () => {
             const callbackFn = jasmine.createSpy("callbackFn");
 
-            suiteObj.beforeEach(callbackFn);
+            SpecObj.beforeEach(callbackFn);
 
-            it("should invoke the callback function with the suite's parameters", function () {
+            it("should invoke the callback function with the Spec's parameters", function () {
                 expect(callbackFn).toHaveBeenCalledWith(this);
             });
         });
@@ -121,13 +121,13 @@ describe("Given a Suite test helper", () => {
 
             function callbackTest() {
                 if (runCount > 0) {
-                    it("should invoke the callback function with the suite's parameters", function () {
+                    it("should invoke the callback function with the Spec's parameters", function () {
                         expect(callbackFn).toHaveBeenCalledWith(this);
                     });
                 }
             }
 
-            suiteObj.afterEach(callbackFn);
+            SpecObj.afterEach(callbackFn);
 
             afterEach(() => ++runCount);
 
@@ -141,13 +141,13 @@ describe("Given a Suite test helper", () => {
 
             function callbackTest() {
                 if (runCount > 0) {
-                    it("should invoke the callback function with the suite's parameters", function () {
+                    it("should invoke the callback function with the Spec's parameters", function () {
                         expect(callbackFn).toHaveBeenCalledWith(this);
                     });
                 }
             }
 
-            suiteObj.it("itTest", callbackFn);
+            SpecObj.it("itTest", callbackFn);
 
             afterEach(() => ++runCount);
 

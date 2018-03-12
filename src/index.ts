@@ -1,3 +1,3 @@
 export * from "./random";
-export * from "./suite";
+export * from "./spec";
 export * from "./template";
