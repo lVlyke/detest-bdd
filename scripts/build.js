@@ -17,7 +17,9 @@ const BUILD_DIR = "./dist";
 (function main() {
     fs.removeSync(BUILD_DIR);
 
-    child_process.execSync("tsc");
+    child_process.execSync("yarn test", { stdio: "inherit" });
+
+    child_process.execSync("tsc", { stdio: "inherit" });
 
     for (let injectedFileName in INJECTED_FILES) {
         fs.copy(INJECTED_FILES[injectedFileName], path.join(BUILD_DIR, injectedFileName));
