@@ -1,15 +1,15 @@
-export interface Spec<T> {
-    beforeEach(callback: Spec.Callback<T>): void;
-    afterEach(callback: Spec.Callback<T>): void;
-    it(description: string, callback: Spec.Callback<T>): void;
+export interface Suite<T> {
+    beforeEach(callback: Suite.Callback<T>): void;
+    afterEach(callback: Suite.Callback<T>): void;
+    it(description: string, callback: Suite.Callback<T>): void;
 }
 
-export namespace Spec {
+export namespace Suite {
 
     export type Callback<T> = (params: T) => Promise<void> | void;
 
-    // Creates a helper object that provides type-safe wrappers of Jasmine BDD functions for a test suite
-    export function create<T>(): Spec<T> {
+    // Creates a helper object that provides type-safe wrappers of BDD functions for a test suite
+    export function create<T>(): Suite<T> {
         return {
             beforeEach: (callback: Callback<T>) => beforeEach(inject<T>(callback)),
             afterEach: (callback: Callback<T>) => afterEach(inject<T>(callback)),
@@ -17,7 +17,7 @@ export namespace Spec {
         };
     }
 
-    // Creates a wrapper around Jasmine BDD functions that allows injection of type-safe properties for the test suite
+    // Creates a wrapper around BDD functions that allows injection of type-safe properties for the test suite
     export function inject<T>(callback: Callback<T>): (doneFn: DoneFn) => void {
         return function(doneFn: DoneFn) {
             let async = callback(this);

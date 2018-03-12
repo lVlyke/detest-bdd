@@ -19,6 +19,10 @@ export namespace Random {
         let str = "";
         let length = integer(minLength, maxLength);
 
+        if (!options.alpha && !options.numeric) {
+            throw new Error("String must be either alpha, numeric, or both.");
+        }
+
         for (let i = 0; i < length; ++i) {
             let alphaCode = boolean() ? integer(65, 90) : integer(97, 122);
             let numericCode = integer(48, 57);

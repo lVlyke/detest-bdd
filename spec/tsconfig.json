@@ -13,18 +13,18 @@
         "moduleResolution": "node",
         "target": "es6",
         "outDir": "./dist",
-        "rootDir": "./src",
-        "sourceMaps": true,
+        "rootDir": ".",
+        "sourceMap": true,
         "lib": [
             "es2015",
             "dom"
         ]
     },
     "include": [
-        "**/*.ts"
+        "./**/*.ts"
     ],
     "exclude": [
-        "node_modules"
+        "support"
     ],
     "typeRoots": [
         "node_modules/@types"

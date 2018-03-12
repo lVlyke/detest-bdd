@@ -1,4 +1,4 @@
-export function Template<T extends object>(paramNames: Template.Params<T>["paramNames"], callback: Template.CallbackFn, ...paramsList: T[]) {
+export function Template<T extends object>(paramNames: Template.Params<T>["paramNames"], callback: Template.CallbackFn, ...paramsList: T[]): () => void {
     const template = Template.create<T>(paramNames, callback);
 
     return () => template.run(...paramsList);

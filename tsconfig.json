@@ -14,7 +14,7 @@
         "target": "es5",
         "outDir": "./dist",
         "rootDir": "./src",
-        "sourceMaps": true,
+        "sourceMap": true,
         "lib": [
             "es2015",
             "dom"

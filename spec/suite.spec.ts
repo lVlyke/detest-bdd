@@ -1,0 +1,158 @@
+import { Suite } from "./../src/suite";
+
+describe("Given a Suite test helper", () => {
+
+    describe("when inject is called", () => {
+
+        beforeEach(function () {
+            this.doneFn = jasmine.createSpy("doneFn");
+        });
+
+        describe("when using an async callback", () => {
+
+            beforeEach(function () { 
+                this.callbackFn = jasmine.createSpy("callbackFn", () => new Promise((resolve, reject) => {
+                    this.resolveFn = resolve;
+                    this.rejectFn = reject;
+                })).and.callThrough();
+            });
+
+            beforeEach(function () { 
+                this.injectFn = Suite.inject(this.callbackFn);
+            });
+
+            it("should return a function", function () {
+                expect(this.injectFn).toEqual(jasmine.any(Function));
+            });
+
+            describe("when the function is invoked", () => {
+
+                beforeEach(function () { 
+                    this.injectFn(this.doneFn);
+                });
+
+                it("should invoke the callback function with the suite's parameters", function () {
+                    expect(this.callbackFn).toHaveBeenCalledWith(this);
+                });
+
+                it("should NOT call the done function", function () {
+                    expect(this.doneFn).not.toHaveBeenCalled();
+                });
+
+                describe("when the async callback resolves", function () {
+
+                    beforeEach(function () { 
+                        this.resolveFn();
+                    });
+
+                    it("should call the done function", function () {
+                        setTimeout(() => expect(this.doneFn).toHaveBeenCalled());
+                    });
+                });
+
+                describe("when the async callback rejects", function () {
+
+                    beforeEach(function () { 
+                        this.rejectFn();
+                    });
+
+                    it("should call the done function", function () {
+                        setTimeout(() => expect(this.doneFn).toHaveBeenCalled());
+                    });
+                });
+            });
+        });
+
+        describe("when NOT using an async callback", () => {
+
+            beforeEach(function () { 
+                this.callbackFn = jasmine.createSpy("callbackFn");
+            });
+
+            beforeEach(function () { 
+                this.injectFn = Suite.inject(this.callbackFn);
+            });
+
+            it("should return a function", function () {
+                expect(this.injectFn).toEqual(jasmine.any(Function));
+            });
+
+            describe("when the function is invoked", () => {
+
+                beforeEach(function () { 
+                    this.injectFn(this.doneFn);
+                });
+
+                it("should invoke the callback function with the suite's parameters", function () {
+                    expect(this.callbackFn).toHaveBeenCalledWith(this);
+                });
+
+                it("should call the done function", function () {
+                    expect(this.doneFn).toHaveBeenCalledWith();
+                });
+            });
+        });
+    });
+
+    describe("when create is called", () => {
+        const suiteObj = Suite.create(); 
+
+        it("should return an object with the expected properties", function () {
+            expect(suiteObj).toEqual(jasmine.objectContaining({
+                beforeEach: jasmine.any(Function),
+                afterEach: jasmine.any(Function),
+                it: jasmine.any(Function)
+            }));
+        });
+
+        describe("when beforeEach is called", () => {
+            const callbackFn = jasmine.createSpy("callbackFn");
+
+            suiteObj.beforeEach(callbackFn);
+
+            it("should invoke the callback function with the suite's parameters", function () {
+                expect(callbackFn).toHaveBeenCalledWith(this);
+            });
+        });
+
+        describe("when afterEach is called", () => {
+            const callbackFn = jasmine.createSpy("callbackFn");
+            let runCount = 0;
+
+            function callbackTest() {
+                if (runCount > 0) {
+                    it("should invoke the callback function with the suite's parameters", function () {
+                        expect(callbackFn).toHaveBeenCalledWith(this);
+                    });
+                }
+            }
+
+            suiteObj.afterEach(callbackFn);
+
+            afterEach(() => ++runCount);
+
+            callbackTest();
+            callbackTest();
+        });
+
+        describe("when it is called", () => {
+            const callbackFn = jasmine.createSpy("callbackFn");
+            let runCount = 0;
+
+            function callbackTest() {
+                if (runCount > 0) {
+                    it("should invoke the callback function with the suite's parameters", function () {
+                        expect(callbackFn).toHaveBeenCalledWith(this);
+                    });
+                }
+            }
+
+            suiteObj.it("itTest", callbackFn);
+
+            afterEach(() => ++runCount);
+
+            callbackTest();
+            callbackTest();
+        });
+    });
+});
