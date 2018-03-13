@@ -1,6 +1,6 @@
 {
   "name": "bdd-test-helpers",
-  "version": "1.0.0-rc.1",
+  "version": "1.0.0-rc.2",
   "description": "A set of utilities for BDD testing frameworks like Jasmine and Mocha, Chai that make tests more type-safe and more concise.",
   "main": "index.js",
   "repository": "https://github.com/lVlyke/bdd-test-helpers.git",

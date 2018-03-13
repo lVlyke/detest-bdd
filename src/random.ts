@@ -1,5 +1,10 @@
 export namespace Random {
 
+    export interface StringOptions {
+        alpha?: boolean;
+        numeric?: boolean;
+    }
+
     export function number(min: number = 0, max: number = Number.MAX_VALUE): number {
         return Math.random() * (max - min) + min;
     }
@@ -12,10 +17,7 @@ export namespace Random {
         return !!integer(0, 1);
     }
 
-    export function string(minLength: number = 0, maxLength: number = 20, options: {
-        alpha?: boolean,
-        numeric?: boolean
-    } = { alpha: true, numeric: true }): string {
+    export function string(minLength: number = 0, maxLength: number = 20, options: StringOptions = { alpha: true, numeric: true }): string {
         let str = "";
         let length = integer(minLength, maxLength);
 
