@@ -231,10 +231,8 @@ describe("Given a Calculator", () => {
             describe(`when the round flag is ${options.round} and the absolute flag is ${options.absolute}`, () => {
 
                 beforeEach(function () {
-                    if (options) {
-                        this.expected = options.round ? Math.round(this.expected) : this.expected;
-                        this.expected = options.absolute ? Math.abs(this.expected) : this.expected;
-                    }
+                    this.expected = options.round ? Math.round(this.expected) : this.expected;
+                    this.expected = options.absolute ? Math.abs(this.expected) : this.expected;
                 });
 
                 it("then it should return the expected value", function () {
@@ -336,10 +334,8 @@ describe("Given a Calculator", () => {
             describe(`when the round flag is ${options.round} and the absolute flag is ${options.absolute}`, () => {
 
                 spec.beforeEach((params: CalculatorTest) => {
-                    if (options) {
-                        params.expected = options.round ? Math.round(params.expected) : params.expected;
-                        params.expected = options.absolute ? Math.abs(params.expected) : params.expected;
-                    }
+                    params.expected = options.round ? Math.round(params.expected) : params.expected;
+                    params.expected = options.absolute ? Math.abs(params.expected) : params.expected;
                 });
 
                 spec.it("then it should return the expected value", (params: CalculatorTest) => {
@@ -408,13 +404,23 @@ interface Template<T extends object> {
 }
 ```
 
-TODO
+Represents a template, which is an object that takes an input and runs a block of test code with that input.
+
+* ```paramNames``` The ordered list of input parameter names that the template callback will use as arguments.
+* ```invoke``` A function that can be called to invoke the template once. For more information, see [```Template.InvokeFn```](#templateinvokefn).
+* ```run``` A function that can be called to run the template with multiple inputs. For more information, see [```Template.RunFn```](#templaterunfn).
 
 ```ts
 function Template<T extends object>(paramNames: string[], callback: Template.CallbackFn, ...paramsList: T[]): () => void;
 ```
 
-TODO
+Shorthand method that creates a ```Template``` and returns a function that executes it with the given ```paramsList``` when called.
+
+* ```paramNames``` The ordered list of input parameter names that the template callback will use as arguments. See [```Template```](#template-1).
+* ```callback``` The callback that contains the test code to execute. See [```Template.CallbackFn```](#templatecallbackfn).
+* ```paramsList``` The list of input values to pass into the template callback. For more information, see [```Template.RunFn```](#templaterunfn).
+
+Returns a ```Function``` that when called will execute the template with the given ```paramsList```.
 
 #### Template.create
 
@@ -422,7 +428,36 @@ TODO
 function Template.create<T extends object>(paramNames: string[], callback: CallbackFn): Template<T>;
 ```
 
-TODO
+Creates a new ```Template``` object.
+
+* ```paramNames``` The ordered list of input parameter names that the template callback will use as arguments. See [```Template```](#template-1).
+* ```callback``` The callback that contains the test code to execute. See [```Template.CallbackFn```](#templatecallbackfn).
+
+Returns a new ```Template```.
+
+#### Template.CallbackFn
+
+```ts
+type Template.CallbackFn = (...paramList: any[]) => void;
+```
+
+* ```paramList``` The list of inputs to the template that correspond to [```paramNames```](#templatecreate).
+
+#### Template.InvokeFn
+
+```ts
+type Template.InvokeFn<T extends object> = (params: T) => void;
+```
+
+* ```params``` An object containing key-value pairs corresponding to [```paramNames```](#templatecreate).
+
+#### Template.RunFn
+
+```ts
+type Template.RunFn<T extends object> = (...paramsList: T[]) => void;
+```
+
+* ```paramsList``` The list of objects containing key-value pairs corresponding to [```paramNames```](#templatecreate).
 
 ### Spec
 
@@ -434,7 +469,11 @@ interface Spec<T> {
 }
 ```
 
-TODO
+An object that provides a simple type-safe wrapper around properties used in a test spec.
+
+* ```beforeEach``` A proxy for ```beforeEach``` that, when invoked, provides a type-safe collection of properties as the first argument to the callback. For more information, see [```Spec.Callback```](#speccallback).
+* ```afterEach``` A proxy for ```afterEach``` that, when invoked, provides a type-safe collection of properties as the first argument to the callback. For more information, see [```Spec.Callback```](#speccallback).
+* ```it``` A proxy for ```it``` that, when invoked, provides a type-safe collection of properties as the first argument to the callback. For more information, see [```Spec.Callback```](#speccallback).
 
 #### Spec.create
 
@@ -442,7 +481,7 @@ TODO
 function Spec.create<T>(): Spec<T>;
 ```
 
-TODO
+Creates a new ```Spec``` with the given ```T```.
 
 #### Spec.inject
 
@@ -450,7 +489,21 @@ TODO
 function Spec.inject<T>(callback: Spec.Callback<T>): (doneFn: DoneFn) => void;
 ```
 
-TODO
+Provides a function that when called injects a type-safe collection of properties as the first argument to the callback. For more information, see [```Spec.Callback```](#speccallback).
+
+* ```callback``` The callback function that will receive the injected properties. For more information, see [```Spec.Callback```](#speccallback).
+
+#### Spec.Callback
+
+```ts
+type Spec.Callback<T> = (params: T) => Promise<void> | void;
+```
+
+Represents a callback that receives a type-safe collection of test properties as the first argument.
+
+* ```params``` The test properties for the spec.
+
+If the callback doesn't return a value, the test context will complete immediately. If the callback returns a ```Promise```, the test context will wait for the returned ```Promise``` to resolve or reject before completing.
 
 ### Random
 
