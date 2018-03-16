@@ -17,7 +17,7 @@ export namespace Random {
         return !!integer(0, 1);
     }
 
-    export function string(minLength: number = 0, maxLength: number = 20, options: StringOptions = { alpha: true, numeric: true }): string {
+    export function string(minLength: number = 1, maxLength: number = 20, options: StringOptions = { alpha: true, numeric: true }): string {
         let str = "";
         let length = integer(minLength, maxLength);
 

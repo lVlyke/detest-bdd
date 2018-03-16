@@ -246,11 +246,11 @@ describe("Given a Random test helper", () => {
 
         describe("when minLength is NOT given", () => {
 
-            it("should return a string between 0 and 20 (inclusive)", function () {
+            it("should return a string between 1 and 20 (inclusive)", function () {
                 for (let i = 0; i < NUM_TEST_ITERACTIONS; ++i) {
                     const str = Random.string();
 
-                    expect(str.length).toBeGreaterThanOrEqual(0);
+                    expect(str.length).toBeGreaterThanOrEqual(1);
                     expect(str.length).toBeLessThanOrEqual(20);
                 }
             });
