@@ -1,22 +1,19 @@
 import { Template } from "../src/template";
+import { InputBuilder } from "../src/input-builder";
 
 describe("Given a Template test helper", () => {
-    const paramNames = ["a", "b", "c"];
-    const runParams = [1, 2, 3].map(() => paramNames.reduce((invokeParams: any, name: string, index: number) => {
-        invokeParams[name] = index;
-        return invokeParams;
-    }, {}));
-    const invokeParams = paramNames.reduce((invokeParams: any, name: string, index: number) => {
-        invokeParams[name] = index;
-        return invokeParams;
-    }, {});
+    type Input = { a: number, b: number, c: number };
+    const paramNames: (keyof Input)[] = ["a", "b", "c"];
+    const inputBuilder: InputBuilder<Input> = InputBuilder.fragment<Input>({ a: 1, b: 2, c: 3 });
+    const runParams: Input[] = inputBuilder.build();
+    const invokeParams: Input = runParams[0];
 
     describe("when it is called", () => {
 
         it("should return a function", function () {
             const callbackFnSpy = jasmine.createSpy("callbackFn");
             const callbackFn = (...params: any[]) => callbackFnSpy(...params);
-            const fn = Template(paramNames, callbackFn, ...runParams);
+            const fn = Template(paramNames, inputBuilder, callbackFn);
 
             expect(fn).toEqual(jasmine.any(Function));
         });
@@ -24,7 +21,34 @@ describe("Given a Template test helper", () => {
         describe("when the function is called", () => {
             const callbackFnSpy = jasmine.createSpy("callbackFn");
             const callbackFn = (...params: any[]) => callbackFnSpy(...params);
-            const fn = Template(paramNames, callbackFn, ...runParams);
+            const fn = Template(paramNames, inputBuilder, callbackFn);
+
+            fn();
+
+            it("should run the template with the given inputs", function () {
+                expect(callbackFnSpy.calls.count()).toEqual(runParams.length);
+
+                for (let i = 0; i < runParams.length; ++i) {
+                    expect(callbackFnSpy.calls.argsFor(i)).toEqual(paramNames.map((paramName: keyof Input) => invokeParams[paramName]));
+                }
+            });
+        });
+    });
+
+    describe("when withInputs is called", () => {
+
+        it("should return a function", function () {
+            const callbackFnSpy = jasmine.createSpy("callbackFn");
+            const callbackFn = (...params: any[]) => callbackFnSpy(...params);
+            const fn = Template.withInputs<Input>(paramNames, callbackFn, ...runParams);
+
+            expect(fn).toEqual(jasmine.any(Function));
+        });
+
+        describe("when the function is called", () => {
+            const callbackFnSpy = jasmine.createSpy("callbackFn");
+            const callbackFn = (...params: any[]) => callbackFnSpy(...params);
+            const fn = Template.withInputs(paramNames, callbackFn, ...runParams);
 
             fn();
 
@@ -32,7 +56,7 @@ describe("Given a Template test helper", () => {
                 expect(callbackFnSpy.calls.count()).toEqual(runParams.length);
 
                 for (let i = 0; i < runParams.length; ++i) {
-                    expect(callbackFnSpy.calls.argsFor(i)).toEqual(paramNames.map((paramName: string) => invokeParams[paramName]));
+                    expect(callbackFnSpy.calls.argsFor(i)).toEqual(paramNames.map((paramName: keyof Input) => invokeParams[paramName]));
                 }
             });
         });
@@ -61,7 +85,7 @@ describe("Given a Template test helper", () => {
 
                 template.invoke(invokeParams);
 
-                expect(callbackFnSpy).toHaveBeenCalledWith(...paramNames.map((paramName: string) => invokeParams[paramName]));
+                expect(callbackFnSpy).toHaveBeenCalledWith(...paramNames.map((paramName: keyof Input) => invokeParams[paramName]));
             });
         });
 
@@ -76,7 +100,7 @@ describe("Given a Template test helper", () => {
                 expect(callbackFnSpy.calls.count()).toEqual(runParams.length);
 
                 for (let i = 0; i < runParams.length; ++i) {
-                    expect(callbackFnSpy.calls.argsFor(i)).toEqual(paramNames.map((paramName: string) => invokeParams[paramName]));
+                    expect(callbackFnSpy.calls.argsFor(i)).toEqual(paramNames.map((paramName: keyof Input) => invokeParams[paramName]));
                 }
             });
         });

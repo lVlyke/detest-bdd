@@ -1,6 +1,6 @@
 export class InputBuilder<T> {
         
-    protected dictionary: InputBuilder.FragmentListDictionary<T> = {};
+    protected _dictionary: InputBuilder.FragmentListDictionary<T> = {};
 
     public static fragment<T>(...fragmentDictionaries: InputBuilder.FragmentDictionary<T>[]): InputBuilder<T> {
         return new InputBuilder<T>().fragment(...fragmentDictionaries);
@@ -14,13 +14,17 @@ export class InputBuilder<T> {
         return new InputBuilder<T>().fragmentBuilder<_T>(key, builder);
     }
 
+    public get dictionary(): Readonly<InputBuilder.FragmentListDictionary<T>> {
+        return this._dictionary;
+    }
+
     public build(): T[] {
         // Get all of the keys in the fragment list dictionary
-        let dictionaryKeys: Array<keyof T> = Object.getOwnPropertyNames(this.dictionary) as Array<keyof T>;
+        let dictionaryKeys: Array<keyof T> = Object.getOwnPropertyNames(this._dictionary) as Array<keyof T>;
 
         // Generate a list of all possible permutations based on the given input fragments
         return dictionaryKeys.reduce((permutations: InputBuilder.Permutation<T>[], key: keyof T) => {
-            return this.applyFragmentListToPermutations(key, this.dictionary[key], permutations);
+            return this.applyFragmentListToPermutations(key, this._dictionary[key], permutations);
         }, []) as T[];
     }
 
@@ -29,10 +33,10 @@ export class InputBuilder<T> {
         fragmentDictionaries.forEach((fragmentDictionary) => {
             for (let key in fragmentDictionary) {
                 // Initialize the fragment list if needed
-                this.dictionary[key] = this.dictionary[key] || [];
+                this._dictionary[key] = this._dictionary[key] || [];
 
                 // Add the current fragment to the list
-                this.dictionary[key].push(fragmentDictionary[key]);
+                this._dictionary[key].push(fragmentDictionary[key]);
             }
         });
 
@@ -43,10 +47,10 @@ export class InputBuilder<T> {
         // Add all of the fragment lists to the builder
         for (let key in fragmentListDictionary) {
             // Initialize the fragment list if needed
-            this.dictionary[key] = this.dictionary[key] || [];
+            this._dictionary[key] = this._dictionary[key] || [];
 
             // Merge the current fragment list with the builder list
-            this.dictionary[key].push(...(fragmentListDictionary[key] || []));
+            this._dictionary[key].push(...(fragmentListDictionary[key] || []));
         }
 
         return this;
