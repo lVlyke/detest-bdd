@@ -2,7 +2,7 @@
 
 # BDD Test Helpers
 
-A set of utilities for BDD testing frameworks like Jasmine and Mocha, Chai that make tests more type-safe and more concise.
+A set of type-safe utilities for BDD testing frameworks like Jasmine and Mocha, Chai that make tests more type-safe and more concise.
 
 * [Installation](#installation)
 * [Examples](#examples)
@@ -23,6 +23,7 @@ BDD Test Helpers works with any JavaScript testing framework that uses the ```de
 ## Examples
 
 * [Template](#template)
+* [Input Builder](#input-builder)
 * [Spec](#spec)
 * [Random](#random)
 
@@ -271,6 +272,126 @@ Finished in 0.026 seconds
 Without losing any test coverage at all, we've gone from having to write **10** unit tests to only **2**.
 
 For more information, see the [**API reference**](#template-1).
+
+### Input Builder
+
+The previous section explained ```Template``` and how it simplifies the amount of test code we have to write, but we can still do better. The input data that is passed to the templated test code often simply ends up being different permutations of the same data. For example, here's the input to the test template we wrote for ```Calculator.divide```:
+
+```ts
+[ { options: undefined },
+  { options: {}},
+  { options: { round: true }},
+  { options: { round: false }},
+  { options: { absolute: true }},
+  { options: { absolute: false }},
+  { options: { round: true, absolute: true }},
+  { options: { round: false, absolute: true }},
+  { options: { round: true, absolute: false }},
+  { options: { round: false, absolute: false }} ]
+```
+
+As you can see, all of the inputs are just different combinations of values (and lack of values) to test all of the possible scenarios. When we have more than two or three input properties to test, the list of input data can get long quickly. This is where ```InputBuilder``` comes in. ```InputBuilder``` allows you to define values for individual input properties (called _fragments_), and then generates a list of all possible permutations of inputs to your test template based on those fragments.
+
+Let's see what an ```InputBuilder``` would look like for our input data above:
+
+```ts
+InputBuilder
+    .fragment({ options: undefined })
+    .fragment({ options: {} })
+    .fragmentBuilder("options", InputBuilder.
+        .fragment({ round: true })
+        .fragment({ round: false })
+        .fragment({ absolute: true })
+        .fragment({ absolute: false })
+    )
+    .build();
+```
+
+Each fragment defines a possible permutation of a specific input property that will be used to build the final list. As we can see above, it's also possible to generate fragments from another ```InputBuilder``` using the ```fragmentBuilder``` operator.
+
+There's still some redundancy we can eliminate, however, by using the ```fragmentList``` operator to consolidate our fragment definitions:
+
+```ts
+InputBuilder
+    .fragmentList({ options: [undefined, {}] })
+    .fragmentBuilder("options", InputBuilder.
+        .fragmentList({ round: [true, false] })
+        .fragmentList({ absolute: [true, false] })
+    )
+    .build();
+```
+
+This generates the following output:
+
+```ts
+[ { options: undefined },
+  { options: {}},
+  { options: { round: true }},
+  { options: { round: false }},
+  { options: { absolute: true }},
+  { options: { absolute: false }},
+  { options: { round: true, absolute: true }},
+  { options: { round: false, absolute: true }},
+  { options: { round: true, absolute: false }},
+  { options: { round: false, absolute: false }} ]
+```
+
+Now, let's put it all together by modifying the ```Calculator.divide``` unit tests we wrote earlier:
+
+```ts
+const DivideTemplateInput = InputBuilder
+    .fragmentList({ options: [undefined, {}] })
+    .fragmentBuilder("options", InputBuilder.
+        .fragmentList({ round: [true, false] })
+        .fragmentList({ absolute: [true, false] })
+    );
+
+describe("Given a Calculator", () => {
+
+    beforeEach(function () {
+        this.calculator = new Calculator();
+    });
+
+    beforeEach(function () {
+        this.a = Random.number();
+        this.b = Random.number();
+        this.expected = this.a / this.b;
+    });
+
+    describe("when the divide method is called", Template(["options"], DivideTemplateInput, (options: Options) => {
+
+        if (options) {
+            describe(`when the round flag is ${options.round} and the absolute flag is ${options.absolute}`, () => {
+
+                beforeEach(function () {
+                    this.expected = options.round ? Math.round(this.expected) : this.expected;
+                    this.expected = options.absolute ? Math.abs(this.expected) : this.expected;
+                });
+
+                it("then it should return the expected value", function () {
+                    expect(this.calculator.divide(this.a, this.b, options)).toEqual(this.expected);
+                });
+            });
+        }
+        else {
+            it("then it should return the expected value", function () {
+                expect(this.calculator.divide(this.a, this.b)).toEqual(this.expected);
+            });
+        }
+    });
+});
+```
+
+Output:
+
+```bash
+..........
+
+10 specs, 0 failures
+Finished in 0.026 seconds
+```
+
+For more information, see the [**API reference**](#input-builder-1).
 
 ### Random
 

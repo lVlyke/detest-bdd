@@ -10,18 +10,18 @@ export class InputBuilder<T> {
         return new InputBuilder<T>().fragmentList(fragmentListDictionary);
     }
 
-    public static builderFragment<T, _T>(key: keyof T, builder: InputBuilder<_T>): InputBuilder<T> {
-        return new InputBuilder<T>().builderFragment<_T>(key, builder);
+    public static fragmentBuilder<T, _T>(key: keyof T, builder: InputBuilder<_T>): InputBuilder<T> {
+        return new InputBuilder<T>().fragmentBuilder<_T>(key, builder);
     }
 
-    public build(): InputBuilder.Permutation<T>[] {
+    public build(): T[] {
         // Get all of the keys in the fragment list dictionary
         let dictionaryKeys: Array<keyof T> = Object.getOwnPropertyNames(this.dictionary) as Array<keyof T>;
 
         // Generate a list of all possible permutations based on the given input fragments
         return dictionaryKeys.reduce((permutations: InputBuilder.Permutation<T>[], key: keyof T) => {
             return this.applyFragmentListToPermutations(key, this.dictionary[key], permutations);
-        }, []);
+        }, []) as T[];
     }
 
     public fragment(...fragmentDictionaries: InputBuilder.FragmentDictionary<T>[]): InputBuilder<T> {
@@ -52,7 +52,7 @@ export class InputBuilder<T> {
         return this;
     }
 
-    public builderFragment<_T>(key: keyof T, builder: InputBuilder<_T>): InputBuilder<T> {
+    public fragmentBuilder<_T>(key: keyof T, builder: InputBuilder<_T>): InputBuilder<T> {
         // Add all of the permutations generated from the builder as fragments to this builder
         return this.fragment(...builder.build().map<any>(data => ({ [key]: data })));
     }
