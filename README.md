@@ -31,11 +31,9 @@ Detest BDD works with any JavaScript testing framework that uses the ```describe
 
 ### Template
 
-When writing unit tests, it's easy to write redundant test code repeatedly with only minor variations. This leads to code that's not only tedious to write, but hard to read and refactor in the future. Test templates solve this issue by allowing you to write parts of your test code in a container that allow you to pass input values and modify the shape of the test code based on those inputs.
+When writing unit tests, it's easy to write redundant test cases repeatedly with only minor variations. This leads to code that's not only tedious to write, but also hard to read and refactor in the future. Test templates solve this issue by allowing you to write parts of your test code in a container that allow you to pass input values and modify the shape of the test code based on those inputs.
 
 #### Example
-
-First, let's look at an example of a unit test without ```Template```.
 
 Given this piece of code:
 
@@ -57,7 +55,7 @@ export class Calculator {
 }
 ```
 
-And the associated unit tests:
+First, let's look at an example of writing unit tests for ```Calculator.divide``` _without_ test templates:
 
 ```ts
 describe("Given a Calculator", () => {
@@ -207,9 +205,9 @@ Output:
 Finished in 0.026 seconds
 ```
 
-The first thing you'll probably notice about each of the tests is that they all basically do the same thing. There are minor changes, such as a call to ```Math.abs``` or ```Math.round``` depending on the flags passed to ```divide```, but otherwise it is just redundant code. If we want to add new flags for ```divide``` in the future, we'll have to go through the same process, and add more redundant test code to cover all cases.
+You will notice that each of the tests basically does the same thing. There are some minor variations, such as a call to ```Math.abs``` or ```Math.round``` depending on the flags passed to ```divide```, but otherwise it is just redundant code. If we want to add new flags for ```divide```, we'll have to go through the same process and add more redundant test code to cover all of the cases.
 
-Using ```Template``` however, we can abstract this code redundancy out to a set of inputs. Like a for loop allows us to express logic only once for a series of many inputs, ```Template``` allows us to write out test code logic once, and run it on multiple inputs.
+Using ```Template``` however, we can abstract this code redundancy into a set of input data. Like a for loop allows us to express logic only once for a series of inputs, ```Template``` allows us to write the test code logic once and then execute it for multiple inputs.
 
 Here are the unit tests from the previous example, but rewritten with ```Template```:
 
@@ -269,7 +267,7 @@ Output:
 Finished in 0.026 seconds
 ```
 
-Without losing any test coverage at all, we've gone from having to write **10** unit tests to only **2**.
+Without losing any code coverage in our tests, we've gone from having to write **10** unit tests to only **2**.
 
 For more information, see the [**API reference**](#template-1).
 
@@ -290,7 +288,7 @@ The previous section explained ```Template``` and how it simplifies the amount o
   { options: { round: false, absolute: false }} ]
 ```
 
-As you can see, all of the inputs are just different combinations of values (and lack of values) to test all of the possible scenarios. When we have more than two or three input properties to test, the list of input data can get long quickly. This is where ```InputBuilder``` comes in. ```InputBuilder``` allows you to define values for individual input properties (called _fragments_), and then generates a list of all possible permutations of inputs to your test template based on those fragments.
+As you can see, all of the inputs are just different combinations of values (and lack of values) to test all of the possible scenarios. When we have more than two or three input properties to test, the list of input data can get long quickly. This is where ```InputBuilder``` comes in handy. ```InputBuilder``` allows you to define values for individual input properties (called _fragments_), and then generates a list of all possible permutations of inputs to your test template based on those fragments.
 
 Let's see what an ```InputBuilder``` would look like for our input data above:
 
