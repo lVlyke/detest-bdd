@@ -25,7 +25,6 @@ Detest BDD works with any JavaScript testing framework that uses the ```describe
 * [Template](#template)
 * [Input Builder](#input-builder)
 * [Spec](#spec)
-* [Random](#random)
 
 (For more information, see the full [**API reference**](#api))
 
@@ -390,32 +389,6 @@ Finished in 0.026 seconds
 ```
 
 For more information, see the [**API reference**](#input-builder-1).
-
-### Random
-
-Random is a namespace for providing basic random values for tests.
-
-#### Example
-
-```ts
-describe("Given a Calculator", () => {
-
-    spec.beforeEach((params: CalculatorTest) => {
-        params.calculator = new Calculator();
-    });
-
-    spec.beforeEach((params: CalculatorTest) => {
-        params.a = Random.number();
-        params.b = Random.number();
-        params.expected = params.a / params.b;
-    });
-
-    ...
-```
-
-Random supports ```number```, ```integer```, ```boolean```, and ```string```.
-
-For more information, see the [**API reference**](#random-1).
 
 ### Spec
 
