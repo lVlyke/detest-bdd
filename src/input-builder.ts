@@ -1,17 +1,18 @@
 export class InputBuilder<T> {
         
     protected _dictionary: InputBuilder.FragmentListDictionary<T> = {};
+    protected _whenFnDictionary: InputBuilder.FragmentWhenFnDictionary<T> = {};
 
-    public static fragment<T>(...fragmentDictionaries: InputBuilder.FragmentDictionary<T>[]): InputBuilder<T> {
-        return new InputBuilder<T>().fragment(...fragmentDictionaries);
+    public static fragment<T>(fragmentDictionary: InputBuilder.FragmentDictionary<T>, when?: InputBuilder.FragmentWhenFn<T>): InputBuilder<T> {
+        return new InputBuilder<T>().fragment(fragmentDictionary, when);
     }
 
-    public static fragmentList<T>(fragmentListDictionary: InputBuilder.FragmentListDictionary<T>): InputBuilder<T> {
-        return new InputBuilder<T>().fragmentList(fragmentListDictionary);
+    public static fragmentList<T>(fragmentListDictionary: InputBuilder.FragmentListDictionary<T>, when?: InputBuilder.FragmentWhenFn<T>): InputBuilder<T> {
+        return new InputBuilder<T>().fragmentList(fragmentListDictionary, when);
     }
 
-    public static fragmentBuilder<T, _T>(key: keyof T, builder: InputBuilder<_T>): InputBuilder<T> {
-        return new InputBuilder<T>().fragmentBuilder<_T>(key, builder);
+    public static fragmentBuilder<T, _T>(key: keyof T, builder: InputBuilder<_T>, when?: InputBuilder.FragmentWhenFn<T>): InputBuilder<T> {
+        return new InputBuilder<T>().fragmentBuilder<_T>(key, builder, when);
     }
 
     public get dictionary(): Readonly<InputBuilder.FragmentListDictionary<T>> {
@@ -28,37 +29,42 @@ export class InputBuilder<T> {
         }, []) as T[];
     }
 
-    public fragment(...fragmentDictionaries: InputBuilder.FragmentDictionary<T>[]): InputBuilder<T> {
-        // Add all of the fragments to the builder
-        fragmentDictionaries.forEach((fragmentDictionary) => {
-            for (let key in fragmentDictionary) {
-                // Initialize the fragment list if needed
-                this._dictionary[key] = this._dictionary[key] || [];
-
-                // Add the current fragment to the list
-                this._dictionary[key].push(fragmentDictionary[key]);
-            }
-        });
-
-        return this;
-    }
-
-    public fragmentList(fragmentListDictionary: InputBuilder.FragmentListDictionary<T>): InputBuilder<T> {
-        // Add all of the fragment lists to the builder
-        for (let key in fragmentListDictionary) {
+    public fragment(fragmentDictionary: InputBuilder.FragmentDictionary<T>, when?: InputBuilder.FragmentWhenFn<T>): InputBuilder<T> {
+        for (let key in fragmentDictionary) {
             // Initialize the fragment list if needed
-            this._dictionary[key] = this._dictionary[key] || [];
+            let builderDictionary = this._dictionary[key] = this._dictionary[key] || [];
+            let value = fragmentDictionary[key];
 
-            // Merge the current fragment list with the builder list
-            this._dictionary[key].push(...(fragmentListDictionary[key] || []));
+            if (builderDictionary.indexOf(value) === -1) {
+                // Add the current fragment value to the list
+                builderDictionary.push(value);
+
+                if (when) {
+                    this._whenFnDictionary[key] = this._whenFnDictionary[key] || [];
+                    this._whenFnDictionary[key].push([value, when]);
+                }
+            }
         }
 
         return this;
     }
 
-    public fragmentBuilder<_T>(key: keyof T, builder: InputBuilder<_T>): InputBuilder<T> {
+    public fragmentList(fragmentListDictionary: InputBuilder.FragmentListDictionary<T>, when?: InputBuilder.FragmentWhenFn<T>): InputBuilder<T> {
+        for (let key in fragmentListDictionary) {
+            let fragmentDictionaries = fragmentListDictionary[key];
+
+            // Add all of the fragment lists in the dictionary to the builder
+            fragmentDictionaries.map(fragmentDictionary => this.fragment(<any>{ [key]: fragmentDictionary }, when));
+        }
+
+        return this;
+    }
+
+    public fragmentBuilder<_T>(key: keyof T, builder: InputBuilder<_T>, when?: InputBuilder.FragmentWhenFn<T>): InputBuilder<T> {
         // Add all of the permutations generated from the builder as fragments to this builder
-        return this.fragment(...builder.build().map<any>(data => ({ [key]: data })));
+        builder.build().map(data => this.fragment(<any>{ [key]: data }, when));
+
+        return this;
     }
 
     /**
@@ -88,8 +94,19 @@ export class InputBuilder<T> {
 
         // Merge the fragment list values with the existing permutations
         return fragmentList.reduce((appliedPermutations: InputBuilder.Permutation<T>[], value: T[S]) => {
+            // Look up any applicable when function
+            let whenFnResult = this._whenFnDictionary[key] ? this._whenFnDictionary[key].find(v => v[0] === value) : null;
+            let whenFn = whenFnResult ? whenFnResult[1] : null;
+
             // Create all permutations for this value
-            let mergedPermutations = permutations.map(mutation => Object.assign({}, mutation, permutationFragment(value)));
+            let mergedPermutations = permutations.reduce((mergedPermutations, mutation) => {
+                // If there's a when clause for this key-value pair, make sure it passes before adding the value
+                if (!whenFn || whenFn(mutation)) {
+                    mergedPermutations.push(Object.assign({}, mutation, permutationFragment(value)));
+                }
+
+                return mergedPermutations;
+            }, []);
 
             // Add the permutations to the final list
             return appliedPermutations.concat(mergedPermutations);
@@ -119,4 +136,7 @@ export namespace InputBuilder {
     export type FragmentList<T, P extends keyof T> = Fragment<T, P>[];
     export type FragmentListDictionary<T> = { [P in keyof T]?: FragmentList<T, P> };
     export type Permutation<T> = Partial<T>;
+
+    export type FragmentWhenFn<T> = (input: InputBuilder.Permutation<T>) => boolean;
+    export type FragmentWhenFnDictionary<T> = { [P in keyof T]?: [T[P], FragmentWhenFn<T>][] };
 }

@@ -7,20 +7,27 @@ describe("Given an InputBuilder test helper", () => {
     describe("when the fragment method is called", () => {
 
         beforeEach(function () {
-            this.fragmentDictionary = {
-                a: 1,
-                b: 2,
-                c: 3
-            };
-
-            this.inputBuilder = InputBuilder.fragment(this.fragmentDictionary);
+            this.fragmentDictionaries = [
+                { a: 1 },
+                { b: 2 },
+                { c: 3 }
+            ];
         });
 
         it("then it should add the expected values to the builder's dictionary", function () {
+            this.inputBuilder = InputBuilder.fragment(this.fragmentDictionary);
+
             expect(this.inputBuilder.dictionary).toEqual({
                 a: [1],
                 b: [2],
                 c: [3]
+            });
+        });
+
+        describe("when a when callback is given", () => {
+
+            beforeEach(function () {
+
             });
         });
     });
