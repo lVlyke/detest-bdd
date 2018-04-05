@@ -94,15 +94,14 @@ export class InputBuilder<T> {
 
         // Merge the fragment list values with the existing permutations
         return fragmentList.reduce((appliedPermutations: InputBuilder.Permutation<T>[], value: T[S]) => {
-            // Look up any applicable when function
-            let whenFnResult = this._whenFnDictionary[key] ? this._whenFnDictionary[key].find(v => v[0] === value) : null;
-            let whenFn = whenFnResult ? whenFnResult[1] : null;
-
             // Create all permutations for this value
             let mergedPermutations = permutations.reduce((mergedPermutations, mutation) => {
-                // If there's a when clause for this key-value pair, make sure it passes before adding the value
-                if (!whenFn || whenFn(mutation)) {
-                    mergedPermutations.push(Object.assign({}, mutation, permutationFragment(value)));
+                // Create the next permutation
+                mutation = Object.assign({}, mutation, permutationFragment(value));
+
+                // If there are when clauses associated with this permutation, make sure they pass before adding the value to the list
+                if (this.isValidPermutation(mutation)) {
+                    mergedPermutations.push(mutation);
                 }
 
                 return mergedPermutations;
@@ -111,6 +110,20 @@ export class InputBuilder<T> {
             // Add the permutations to the final list
             return appliedPermutations.concat(mergedPermutations);
         }, []);
+    }
+
+    /**
+     * @description Iterates through all keys in the given permutation and invokes any when functions associated with each key-value pair.
+     * 
+     * @return True if all when functions pass, if any, or false otherwise.
+     */
+    private isValidPermutation(permutation: InputBuilder.Permutation<T>): boolean {
+        return Object.getOwnPropertyNames(permutation)
+            .filter((propertyKey: keyof T) => !!this._whenFnDictionary[propertyKey])
+            .map((propertyKey: keyof T) => this._whenFnDictionary[propertyKey].find(v => v[0] === permutation[propertyKey]))
+            .filter(Boolean)
+            .map((whenFnResult: [any, InputBuilder.FragmentWhenFn<T>]) => whenFnResult[1])
+            .every((whenFn: InputBuilder.FragmentWhenFn<T>) => whenFn(permutation));
     }
 
     /**

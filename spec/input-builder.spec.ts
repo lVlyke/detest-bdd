@@ -7,11 +7,11 @@ describe("Given an InputBuilder test helper", () => {
     describe("when the fragment method is called", () => {
 
         beforeEach(function () {
-            this.fragmentDictionaries = [
-                { a: 1 },
-                { b: 2 },
-                { c: 3 }
-            ];
+            this.fragmentDictionary = {
+                a: 1,
+                b: 2,
+                c: 3
+            };
         });
 
         it("then it should add the expected values to the builder's dictionary", function () {
@@ -21,13 +21,6 @@ describe("Given an InputBuilder test helper", () => {
                 a: [1],
                 b: [2],
                 c: [3]
-            });
-        });
-
-        describe("when a when callback is given", () => {
-
-            beforeEach(function () {
-
             });
         });
     });
@@ -79,43 +72,76 @@ describe("Given an InputBuilder test helper", () => {
 
     describe("when the build method is called", () => {
 
-        beforeEach(function () {
-            this.inputBuilder = InputBuilder
-                .fragmentList<Input>({ a: [1, 2, 3] })
-                .fragmentList({ b: [1, 2, 3] })
-                .fragmentList({ c: [1, 2, 3] });
+        describe("when a when callback is used", () => {
+
+            beforeEach(function () {
+                this.whenCallback = (permutation: { b: number }) => permutation.b === 1;
+
+                this.inputBuilder = InputBuilder
+                    .fragmentList<Input>({ a: [1, 2, 3] }, this.whenCallback)
+                    .fragmentList({ b: [1, 2, 3] })
+                    .fragmentList({ c: [1, 2, 3] });
+                
+                this.expectedValue = [
+                    { a: 1, b: 1, c: 1 },
+                    { a: 2, b: 1, c: 1 },
+                    { a: 3, b: 1, c: 1 },
+                    { a: 1, b: 1, c: 2 },
+                    { a: 2, b: 1, c: 2 },
+                    { a: 3, b: 1, c: 2 },
+                    { a: 1, b: 1, c: 3 },
+                    { a: 2, b: 1, c: 3 },
+                    { a: 3, b: 1, c: 3 }
+                ];
+            });
+
+            it("then it should build the expected permutations", function () {
+                expect(this.inputBuilder.build()).toEqual(this.expectedValue);
+            });
         });
 
-        it("then it should build the expected permutations", function () {
-            expect(this.inputBuilder.build()).toEqual([
-                { a: 1, b: 1, c: 1 },
-                { a: 2, b: 1, c: 1 },
-                { a: 3, b: 1, c: 1 },
-                { a: 1, b: 2, c: 1 },
-                { a: 2, b: 2, c: 1 },
-                { a: 3, b: 2, c: 1 },
-                { a: 1, b: 3, c: 1 },
-                { a: 2, b: 3, c: 1 },
-                { a: 3, b: 3, c: 1 },
-                { a: 1, b: 1, c: 2 },
-                { a: 2, b: 1, c: 2 },
-                { a: 3, b: 1, c: 2 },
-                { a: 1, b: 2, c: 2 },
-                { a: 2, b: 2, c: 2 },
-                { a: 3, b: 2, c: 2 },
-                { a: 1, b: 3, c: 2 },
-                { a: 2, b: 3, c: 2 },
-                { a: 3, b: 3, c: 2 },
-                { a: 1, b: 1, c: 3 },
-                { a: 2, b: 1, c: 3 },
-                { a: 3, b: 1, c: 3 },
-                { a: 1, b: 2, c: 3 },
-                { a: 2, b: 2, c: 3 },
-                { a: 3, b: 2, c: 3 },
-                { a: 1, b: 3, c: 3 },
-                { a: 2, b: 3, c: 3 },
-                { a: 3, b: 3, c: 3 }
-            ]);
+        describe("when a when callback is NOT used", () => {
+
+            beforeEach(function () {
+                this.inputBuilder = InputBuilder
+                    .fragmentList<Input>({ a: [1, 2, 3] })
+                    .fragmentList({ b: [1, 2, 3] })
+                    .fragmentList({ c: [1, 2, 3] });
+                
+                this.expectedValue = [
+                    { a: 1, b: 1, c: 1 },
+                    { a: 2, b: 1, c: 1 },
+                    { a: 3, b: 1, c: 1 },
+                    { a: 1, b: 2, c: 1 },
+                    { a: 2, b: 2, c: 1 },
+                    { a: 3, b: 2, c: 1 },
+                    { a: 1, b: 3, c: 1 },
+                    { a: 2, b: 3, c: 1 },
+                    { a: 3, b: 3, c: 1 },
+                    { a: 1, b: 1, c: 2 },
+                    { a: 2, b: 1, c: 2 },
+                    { a: 3, b: 1, c: 2 },
+                    { a: 1, b: 2, c: 2 },
+                    { a: 2, b: 2, c: 2 },
+                    { a: 3, b: 2, c: 2 },
+                    { a: 1, b: 3, c: 2 },
+                    { a: 2, b: 3, c: 2 },
+                    { a: 3, b: 3, c: 2 },
+                    { a: 1, b: 1, c: 3 },
+                    { a: 2, b: 1, c: 3 },
+                    { a: 3, b: 1, c: 3 },
+                    { a: 1, b: 2, c: 3 },
+                    { a: 2, b: 2, c: 3 },
+                    { a: 3, b: 2, c: 3 },
+                    { a: 1, b: 3, c: 3 },
+                    { a: 2, b: 3, c: 3 },
+                    { a: 3, b: 3, c: 3 }
+                ];
+            });
+
+            it("then it should build the expected permutations", function () {
+                expect(this.inputBuilder.build()).toEqual(this.expectedValue);
+            });
         });
     });
 });
