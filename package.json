@@ -29,11 +29,12 @@
   "scripts": {
     "build:js": "node scripts/build.js",
     "pretest": "node scripts/pretest.js",
-    "test": "jasmine"
+    "test": "istanbul cover --root ./spec/dist/src --include-all-sources jasmine"
   },
   "devDependencies": {
     "@types/jasmine": "^2.8.6",
     "fs-extra": "^5.0.0",
+    "istanbul": "^0.4.5",
     "jasmine": "^3.1.0",
     "source-map-support": "^0.5.3",
     "typescript": "^2.7.2"
