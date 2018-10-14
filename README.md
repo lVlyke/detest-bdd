@@ -223,7 +223,7 @@ describe("Given a Calculator", () => {
         this.expected = this.a / this.b;
     });
 
-    describe("when the divide method is called", Template(["options"], (options: Options) => {
+    describe("when the divide method is called", Template.withInputs(["options"], (options: Options) => {
 
         if (options) {
             describe(`when the round flag is ${options.round} and the absolute flag is ${options.absolute}`, () => {
@@ -407,11 +407,11 @@ class ItemList {
     }
 
     public addItem(itemOrOptions: Item | AddOptions) {
-        if (itemOrOptions instanceof Item || !this.itemOrOptions.front) {
+        if (itemOrOptions instanceof Item || !itemOrOptions.front) {
             this._items.push(item);
         }
         else {
-            this._items = [this.itemOrOptions.item].concat(this._items);
+            this._items = [itemOrOptions.item].concat(this._items);
         }
     }
 }
