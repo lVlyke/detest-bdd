@@ -795,14 +795,36 @@ interface Spec<T> {
     beforeEach(callback: Spec.Callback<T>): void;
     afterEach(callback: Spec.Callback<T>): void;
     it(description: string, callback: Spec.Callback<T>): void;
+
+    beforeAll?(callback: Spec.StatelessCallback): void;
+    before?(callback: Spec.StatelessCallback): void;
+    afterAll?(callback: Spec.StatelessCallback): void;
+    after?(callback: Spec.StatelessCallback): void;
+
+    xit?(description: string, callback: Spec.Callback<T>): void;
+    fit?(description: string, callback: Spec.Callback<T>): void;
 }
 ```
 
-An object that provides a simple type-safe wrapper around properties used in a test spec.
+An object that provides a simple type-safe and async-enabled wrapper around functions used in a test spec. For more information, see [```Spec.Callback```](#speccallback) and [```Spec.StatelessCallback```](#specstatelesscallback).
 
-* ```beforeEach``` A proxy for ```beforeEach``` that, when invoked, provides a type-safe collection of properties as the first argument to the callback. For more information, see [```Spec.Callback```](#speccallback).
-* ```afterEach``` A proxy for ```afterEach``` that, when invoked, provides a type-safe collection of properties as the first argument to the callback. For more information, see [```Spec.Callback```](#speccallback).
-* ```it``` A proxy for ```it``` that, when invoked, provides a type-safe collection of properties as the first argument to the callback. For more information, see [```Spec.Callback```](#speccallback).
+The following proxy functions are provided:
+
+* ```beforeEach```
+* ```afterEach```
+* ```it```
+* ```beforeAll```
+  > **NOTE**: This function is only available in test runners that natively support ```beforeAll```.
+* ```before```
+  > **NOTE**: This function is only available in test runners that natively support ```before```.
+* ```afterAll```
+  > **NOTE**: This function is only available in test runners that natively support ```afterAll```.
+* ```after```
+  > **NOTE**: This function is only available in test runners that natively support ```after```.
+* ```xit```
+  > **NOTE**: This function is only available in test runners that natively support ```xit```.
+* ```fit```
+  > **NOTE**: This function is only available in test runners that natively support ```fit```.
 
 #### Spec.create
 
@@ -815,7 +837,7 @@ Creates a new ```Spec``` with the given ```T```.
 #### Spec.inject
 
 ```ts
-function Spec.inject<T>(callback: Spec.Callback<T>): (doneFn: DoneFn) => void;
+function Spec.inject<T>(callback: Spec.Callback<T>): (doneFn: () => void) => void;
 ```
 
 Provides a function that when called injects a type-safe collection of properties as the first argument to the callback. For more information, see [```Spec.Callback```](#speccallback).
@@ -828,9 +850,19 @@ Provides a function that when called injects a type-safe collection of propertie
 type Spec.Callback<T> = (params: T) => Promise<void> | void;
 ```
 
-Represents a callback that receives a type-safe collection of test properties as the first argument.
+Represents a potentially async-enabled callback that receives a type-safe collection of test properties as the first argument.
 
 * ```params``` The test properties for the spec.
+
+If the callback doesn't return a value, the test context will complete immediately. If the callback returns a ```Promise```, the test context will wait for the returned ```Promise``` to resolve or reject before completing.
+
+#### Spec.StatelessCallback
+
+```ts
+type Spec.StatelessCallback = () => Promise<void> | void;
+```
+
+Represents a stateless, potentially async-enabled callback.
 
 If the callback doesn't return a value, the test context will complete immediately. If the callback returns a ```Promise```, the test context will wait for the returned ```Promise``` to resolve or reject before completing.
 

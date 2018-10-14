@@ -105,6 +105,16 @@ describe("Given a Spec test helper", () => {
             }));
         });
 
+        describe("when beforeAll is called", () => {
+            const callbackFn = jasmine.createSpy("callbackFn");
+
+            SpecObj.beforeAll(callbackFn);
+
+            it("should invoke the callback function", function () {
+                expect(callbackFn).toHaveBeenCalled();
+            });
+        });
+
         describe("when beforeEach is called", () => {
             const callbackFn = jasmine.createSpy("callbackFn");
 
@@ -114,6 +124,9 @@ describe("Given a Spec test helper", () => {
                 expect(callbackFn).toHaveBeenCalledWith(this);
             });
         });
+
+        // TODO Figure out how to test this
+        xdescribe("when afterAll is called", () => {});
 
         describe("when afterEach is called", () => {
             const callbackFn = jasmine.createSpy("callbackFn");
