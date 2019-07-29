@@ -35,6 +35,35 @@ describe("Given a Template test helper", () => {
         });
     });
 
+    describe("when it is called with multiple input builders", () => {
+
+        it("should return a function", function () {
+            const callbackFnSpy = jasmine.createSpy("callbackFn");
+            const callbackFn = (...params: any[]) => callbackFnSpy(...params);
+            const fn = Template(paramNames, [inputBuilder, inputBuilder], callbackFn);
+
+            expect(fn).toEqual(jasmine.any(Function));
+        });
+
+        describe("when the function is called", () => {
+            const callbackFnSpy = jasmine.createSpy("callbackFn");
+            const callbackFn = (...params: any[]) => callbackFnSpy(...params);
+            const fn = Template(paramNames, [inputBuilder, inputBuilder], callbackFn);
+
+            fn();
+
+            it("should run the template with the given inputs", function () {
+                let invokedParams = runParams.concat(runParams);
+                
+                expect(callbackFnSpy.calls.count()).toEqual(invokedParams.length);
+
+                for (let i = 0; i < invokedParams.length; ++i) {
+                    expect(callbackFnSpy.calls.argsFor(i)).toEqual(paramNames.map((paramName: keyof Input) => invokeParams[paramName]));
+                }
+            });
+        });
+    });
+
     describe("when withInputs is called", () => {
 
         it("should return a function", function () {

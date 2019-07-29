@@ -1,11 +1,23 @@
 import { InputBuilder } from "./input-builder";
 
-export function Template<T extends object>(paramNames: Template.Params<T>["paramNames"], input: InputBuilder<T>, callback: Template.CallbackFn): () => void {
-    return Template.withInputs<T>(paramNames, callback, ...input.build());
+export function Template<T extends object>(
+    paramNames: Template.Params<T>["paramNames"],
+    input: InputBuilder<T> | InputBuilder<T>[],
+    callback: Template.CallbackFn
+): () => void {
+    let paramsList: T[];
+
+    if (Array.isArray(input)) {
+        paramsList = input.reduce((paramsList, _input) => paramsList.concat(_input.build()), []);
+    } else {
+        paramsList = input.build();
+    }
+
+    return Template.withInputs<T>(paramNames, callback, ...paramsList);
 }
 
 export interface Template<T extends object> {
-    paramNames: string[];
+    paramNames: Array<string | number | symbol>;
     invoke: Template.InvokeFn<T>;
     run: Template.RunFn<T>;
 }

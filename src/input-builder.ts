@@ -118,8 +118,8 @@ export class InputBuilder<T> {
      * @return True if all when functions pass, if any, or false otherwise.
      */
     private isValidPermutation(permutation: InputBuilder.Permutation<T>): boolean {
-        return Object.getOwnPropertyNames(permutation)
-            .filter((propertyKey: keyof T) => !!this._whenFnDictionary[propertyKey])
+        return (Object.getOwnPropertyNames(permutation) as Array<keyof T>)
+            .filter((propertyKey: keyof T) => this._whenFnDictionary[propertyKey])
             .map((propertyKey: keyof T) => this._whenFnDictionary[propertyKey].find(v => v[0] === permutation[propertyKey]))
             .filter(Boolean)
             .map((whenFnResult: [any, InputBuilder.FragmentWhenFn<T>]) => whenFnResult[1])

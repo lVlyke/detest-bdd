@@ -603,13 +603,13 @@ Represents a template, which is an object that takes an input and runs a block o
 * ```run``` A function that can be called to run the template with multiple inputs. For more information, see [```Template.RunFn```](#templaterunfn).
 
 ```ts
-function Template<T extends object>(paramNames: string[], input: InputBuilder<T>, callback: Template.CallbackFn): () => void;
+function Template<T extends object>(paramNames: string[], input: InputBuilder<T> | inputBuilder<T>[], callback: Template.CallbackFn): () => void;
 ```
 
 Shorthand method that creates a ```Template``` and returns a function that executes the template callback with the inputs from the given ```InputBuilder``` when called.
 
 * ```paramNames``` The ordered list of input parameter names that the template callback will use as arguments. See [```Template```](#template-1).
-* ```input``` The ```InputBuilder``` that will be used to generate the template inputs. For more information, see [```InputBuilder```](#input-builder-1).
+* ```input``` The ```InputBuilder```(s) that will be used to generate the template inputs. For more information, see [```InputBuilder```](#input-builder-1).
 * ```callback``` The callback that contains the test code to execute. See [```Template.CallbackFn```](#templatecallbackfn).
 
 Returns a ```Function``` that when called will execute the template with the template callback with the inputs from the given ```InputBuilder```.
