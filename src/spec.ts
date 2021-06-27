@@ -14,10 +14,11 @@ export interface Spec<T> {
 
 export namespace Spec {
 
-    export type RawCallback = (doneFn: () => void) => void;
-    export type StatelessCallback = () => Promise<void> | void;
-    export type Callback<T> = (params: T) => Promise<void> | void;
-
+    export type DoneFn = (() => void) & { fail: () => void };
+    export type RawCallback = (doneFn: DoneFn) => void;
+    export type StatelessCallback = () => Promise<unknown> | void;
+    export type Callback<T> = (params: T) => Promise<unknown> | void;
+    
     // Creates a helper object that provides type-safe wrappers of BDD functions for a test spec
     export function create<T>(): Spec<T> {
         return Object.assign({
@@ -34,11 +35,11 @@ export namespace Spec {
 
     // Creates a wrapper around BDD functions that allows injection of type-safe properties for the test spec
     export function inject<T>(callback: Callback<T>): RawCallback {
-        return function (doneFn: () => void) {
+        return function (doneFn: DoneFn) {
             const async = callback(this);
 
-            if (async) {
-                Promise.resolve(async).then(doneFn).catch(doneFn);
+            if (async && async instanceof Promise) {
+                async.then(doneFn).catch(doneFn.fail ?? doneFn);
             }
             else {
                 doneFn();

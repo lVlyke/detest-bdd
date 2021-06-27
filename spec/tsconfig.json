@@ -7,16 +7,15 @@
         "allowSyntheticDefaultImports": true,
         "declaration": true,
         "stripInternal": true,
-        "emitDecoratorMetadata": true,
         "experimentalDecorators": true,
         "module": "commonjs",
         "moduleResolution": "node",
-        "target": "es6",
+        "target": "es2015",
         "outDir": "./dist",
-        "rootDir": ".",
+        "rootDir": "..",
         "sourceMap": true,
         "lib": [
-            "es2015",
+            "esnext",
             "dom"
         ]
     },
@@ -28,8 +27,5 @@
     ],
     "typeRoots": [
         "node_modules/@types"
-    ],
-    "atom": {
-        "rewriteTsConfig": false
-    }
+    ]
 }

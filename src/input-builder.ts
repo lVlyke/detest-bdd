@@ -129,15 +129,17 @@ export class InputBuilder<T> {
     /**
      * @description Creates a shallow clone of the value.
      */
-    private shallowClone<T extends any>(value: T): T {
+    private shallowClone<T extends unknown>(value: T): T {
         if (!value || !value.constructor) {
             return value;
         }
 
-        switch (value.constructor.name) {
-            case "Object": return Object.assign({}, value);
-            case "Array": return value.map((v: any) => v);
-            default: return value;
+        if (Array.isArray(value)) {
+            return value.slice(0) as T;
+        } else if (typeof value === "object") {
+            return Object.assign({}, value);
+        } else {
+            return value;
         }
     }
 }

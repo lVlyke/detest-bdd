@@ -6,6 +6,7 @@ describe("Given a Spec test helper", () => {
 
         beforeEach(function () {
             this.doneFn = jasmine.createSpy("doneFn");
+            this.doneFn.fail = jasmine.createSpy("doneFn.fail");
         });
 
         describe("when using an async callback", () => {
@@ -56,8 +57,8 @@ describe("Given a Spec test helper", () => {
                         this.rejectFn();
                     });
 
-                    it("should call the done function", function () {
-                        setTimeout(() => expect(this.doneFn).toHaveBeenCalled());
+                    it("should call the fail function", function () {
+                        setTimeout(() => expect(this.doneFn.fail).toHaveBeenCalled());
                     });
                 });
             });
