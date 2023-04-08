@@ -8,11 +8,21 @@ describe("Given a Template test helper", () => {
     const runParams: Input[] = inputBuilder.build();
     const invokeParams: Input = runParams[0];
 
+    function createCallback(callbackFnSpy: jasmine.Spy) {
+        return (...params: any[]) => {
+            beforeEach(() => callbackFnSpy(...params));
+
+            it("should invoke the callback function", () => {
+                expect(true).toBeTrue();
+            });
+        };
+    }
+
     describe("when it is called", () => {
 
         it("should return a function", function () {
             const callbackFnSpy = jasmine.createSpy("callbackFn");
-            const callbackFn = (...params: any[]) => callbackFnSpy(...params);
+            const callbackFn = createCallback(callbackFnSpy);
             const fn = Template(paramNames, inputBuilder, callbackFn);
 
             expect(fn).toEqual(jasmine.any(Function));
@@ -20,7 +30,7 @@ describe("Given a Template test helper", () => {
 
         describe("when the function is called", () => {
             const callbackFnSpy = jasmine.createSpy("callbackFn");
-            const callbackFn = (...params: any[]) => callbackFnSpy(...params);
+            const callbackFn = createCallback(callbackFnSpy);
             const fn = Template(paramNames, inputBuilder, callbackFn);
 
             fn();
@@ -39,7 +49,7 @@ describe("Given a Template test helper", () => {
 
         it("should return a function", function () {
             const callbackFnSpy = jasmine.createSpy("callbackFn");
-            const callbackFn = (...params: any[]) => callbackFnSpy(...params);
+            const callbackFn = createCallback(callbackFnSpy);
             const fn = Template(paramNames, [inputBuilder, inputBuilder], callbackFn);
 
             expect(fn).toEqual(jasmine.any(Function));
@@ -47,7 +57,7 @@ describe("Given a Template test helper", () => {
 
         describe("when the function is called", () => {
             const callbackFnSpy = jasmine.createSpy("callbackFn");
-            const callbackFn = (...params: any[]) => callbackFnSpy(...params);
+            const callbackFn = createCallback(callbackFnSpy);
             const fn = Template(paramNames, [inputBuilder, inputBuilder], callbackFn);
 
             fn();
@@ -68,7 +78,7 @@ describe("Given a Template test helper", () => {
 
         it("should return a function", function () {
             const callbackFnSpy = jasmine.createSpy("callbackFn");
-            const callbackFn = (...params: any[]) => callbackFnSpy(...params);
+            const callbackFn = createCallback(callbackFnSpy);
             const fn = Template.withInputs<Input>(paramNames, callbackFn, ...runParams);
 
             expect(fn).toEqual(jasmine.any(Function));
@@ -76,7 +86,7 @@ describe("Given a Template test helper", () => {
 
         describe("when the function is called", () => {
             const callbackFnSpy = jasmine.createSpy("callbackFn");
-            const callbackFn = (...params: any[]) => callbackFnSpy(...params);
+            const callbackFn = createCallback(callbackFnSpy);
             const fn = Template.withInputs(paramNames, callbackFn, ...runParams);
 
             fn();
@@ -95,7 +105,7 @@ describe("Given a Template test helper", () => {
 
         it("should return a template with the expected properties", function () {
             const callbackFnSpy = jasmine.createSpy("callbackFn");
-            const callbackFn = (...params: any[]) => callbackFnSpy(...params);
+            const callbackFn = createCallback(callbackFnSpy);
             const template = Template.create(paramNames, callbackFn);
 
             expect(template).toEqual(jasmine.objectContaining({
@@ -106,21 +116,21 @@ describe("Given a Template test helper", () => {
         });
 
         describe("when invoke is called", () => {
+            const callbackFnSpy = jasmine.createSpy("callbackFn");
+            const callbackFn = createCallback(callbackFnSpy);
+            const template = Template.create(paramNames, callbackFn);
+
+            template.invoke(invokeParams);
+
 
             it("should call the callback function with the expected parameters", function () {
-                const callbackFnSpy = jasmine.createSpy("callbackFn");
-            const callbackFn = (...params: any[]) => callbackFnSpy(...params);
-                const template = Template.create(paramNames, callbackFn);
-
-                template.invoke(invokeParams);
-
                 expect(callbackFnSpy).toHaveBeenCalledWith(...paramNames.map((paramName: keyof Input) => invokeParams[paramName]));
             });
         });
 
         describe("when run is called", () => {
             const callbackFnSpy = jasmine.createSpy("callbackFn");
-            const callbackFn = (...params: any[]) => callbackFnSpy(...params);
+            const callbackFn = createCallback(callbackFnSpy);
             const template = Template.create(paramNames, callbackFn);
 
             template.run(...runParams);

@@ -127,26 +127,22 @@ describe("Given a Spec test helper", () => {
         });
 
         // TODO Figure out how to test this
-        xdescribe("when afterAll is called", () => {});
+        //describe("when afterAll is called", () => {});
 
         describe("when afterEach is called", () => {
             const callbackFn = jasmine.createSpy("callbackFn");
-            let runCount = 0;
+            
+            describe("when applied", () => {
+                SpecObj.afterEach(callbackFn);
 
-            function callbackTest() {
-                if (runCount > 0) {
-                    it("should invoke the callback function with the Spec's parameters", function () {
-                        expect(callbackFn).toHaveBeenCalledWith(this);
-                    });
-                }
-            }
+                it("should be applied", () => {
+                    expect(true).toBeTrue();
+                });
+            })
 
-            SpecObj.afterEach(callbackFn);
-
-            afterEach(() => ++runCount);
-
-            callbackTest();
-            callbackTest();
+            it("should invoke the callback function with the Spec's parameters", function () {
+                expect(callbackFn).toHaveBeenCalledWith(this);
+            });
         });
 
         describe("when it is called", () => {

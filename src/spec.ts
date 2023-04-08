@@ -39,7 +39,7 @@ export namespace Spec {
             const async = callback(this);
 
             if (async && async instanceof Promise) {
-                async.then(doneFn).catch(doneFn.fail ?? doneFn);
+                async.then(() => doneFn()).catch(() => doneFn.fail ? doneFn.fail() : doneFn());
             }
             else {
                 doneFn();

@@ -1,6 +1,6 @@
 {
   "name": "detest-bdd",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "A type-safe set of utilities that focuses on reducing the amount of test code that you write while maximizing coverage. Compatible with BDD testing frameworks like Jasmine and Mocha.",
   "main": "index.js",
   "repository": "https://github.com/lVlyke/detest-bdd.git",
@@ -32,11 +32,11 @@
     "test": "istanbul cover --root ./spec/dist/src --include-all-sources jasmine"
   },
   "devDependencies": {
-    "@types/jasmine": "^3.6.0",
-    "fs-extra": "^8.1.0",
+    "@types/jasmine": "^4.3.1",
+    "fs-extra": "^11.1.1",
     "istanbul": "^0.4.5",
-    "jasmine": "^3.6.0",
+    "jasmine": "^4.6.0",
     "source-map-support": "^0.5.12",
-    "typescript": "^4.3.0"
+    "typescript": "^4.9.3"
   }
 }
